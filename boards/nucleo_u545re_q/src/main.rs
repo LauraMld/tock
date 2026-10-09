@@ -6,12 +6,14 @@
 #![no_std]
 #![no_main]
 
+use capsules_extra::sr74hc::Sr74HC;
 use components::hmac_component_static;
 use kernel::capabilities::{self, MemoryAllocationCapability};
 use kernel::component::Component;
 use kernel::debug;
 use kernel::debug::PanicResources;
 use kernel::hil::gpio::{Configure, Output};
+use kernel::hil::shift_register::ShiftRegister;
 use kernel::hil::symmetric_encryption::AES256;
 use kernel::platform::chip::Chip;
 use kernel::platform::{KernelResources, SyscallDriverLookup};
@@ -310,6 +312,14 @@ unsafe fn start() -> (
 
     // Board specific wiring
     set_pin_primary_functions(periphs);
+
+    let latch = periphs.gpio_b.pin(PinId::Pin05);
+    let clock = periphs.gpio_a.pin(PinId::Pin08);
+    let data = periphs.gpio_c.pin(PinId::Pin07);
+
+    let sr = Sr74HC::new(&latch, &clock, &data);
+    sr.write(0b00000001);
+    sr.write(0b00000001);
 
     // Create an adapter for the HASH peripheral
     // In this way it is ensured that only one mode is used by the peripheral
