@@ -93,6 +93,7 @@ pub mod screen;
 pub mod sdcard;
 pub mod servo;
 pub mod seven_segment;
+pub mod sevensegment;
 pub mod sg90;
 pub mod sh1106;
 pub mod sha256;

@@ -6,6 +6,7 @@
 #![no_std]
 #![no_main]
 
+use capsules_extra::sevensegment::SevenSegmentShiftRegister;
 use capsules_extra::sr74hc::Sr74HC;
 use components::hmac_component_static;
 use kernel::capabilities::{self, MemoryAllocationCapability};
@@ -13,6 +14,7 @@ use kernel::component::Component;
 use kernel::debug;
 use kernel::debug::PanicResources;
 use kernel::hil::gpio::{Configure, Output};
+use kernel::hil::sevensegment::SevenSegment;
 use kernel::hil::shift_register::ShiftRegister;
 use kernel::hil::symmetric_encryption::AES256;
 use kernel::platform::chip::Chip;
@@ -48,7 +50,6 @@ static PANIC_RESOURCES: SingleThreadValue<PanicResources<ChipHw, ProcessPrinterI
 const PANIC_USART: StaticRef<UsartRegisters> = USART1_BASE;
 
 kernel::stack_size! {0x2000}
-
 struct NucleoU545RE {
     console: &'static capsules_core::console::Console<'static>,
     scheduler: &'static components::sched::round_robin::RoundRobinComponentType,
@@ -318,8 +319,9 @@ unsafe fn start() -> (
     let data = periphs.gpio_c.pin(PinId::Pin07);
 
     let sr = Sr74HC::new(&latch, &clock, &data);
-    sr.write(0b00000001);
-    sr.write(0b00000001);
+    let display = SevenSegmentShiftRegister::new(&sr);
+
+    display.write(1234, 0);
 
     // Create an adapter for the HASH peripheral
     // In this way it is ensured that only one mode is used by the peripheral
