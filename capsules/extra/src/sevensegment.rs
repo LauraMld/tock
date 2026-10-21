@@ -18,7 +18,7 @@ pub struct SevenSegmentShiftRegister<'a, Sr: ShiftRegister, A: Alarm<'a>> {
 
 impl<'a, Sr: ShiftRegister, A: Alarm<'a>> SevenSegmentShiftRegister<'a, Sr, A> {
     pub fn new(
-        shift_register: &'a Sr,
+        shift_register: &'static Sr,
         segment_map_digit: [u8; 10],
         seven_segment: [u8; 4],
         alarm: &'a A,
@@ -74,7 +74,7 @@ impl<'a, Sr: ShiftRegister, A: Alarm<'a>> SevenSegment for SevenSegmentShiftRegi
         false
     }
 
-    fn write(&self, mut number: u16, point: u8) -> Result<(), ErrorCode> {
+    fn write(&self, number: u16, _point: u8) -> Result<(), ErrorCode> {
         self.number.set(number as usize);
         Ok(())
     }
