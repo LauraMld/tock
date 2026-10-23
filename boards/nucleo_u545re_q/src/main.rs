@@ -324,9 +324,9 @@ unsafe fn start() -> (
     buzzer.set();
     buzzer.make_output();
 
-    let latch = static_init!(stm32u545::gpio::Pin, periphs.gpio_b.pin(PinId::Pin05));
-    let clock = static_init!(stm32u545::gpio::Pin, periphs.gpio_a.pin(PinId::Pin08));
-    let data = static_init!(stm32u545::gpio::Pin, periphs.gpio_c.pin(PinId::Pin07));
+    let latch = periphs.gpio_b.pin(PinId::Pin05);
+    let clock = periphs.gpio_a.pin(PinId::Pin08);
+    let data = periphs.gpio_c.pin(PinId::Pin07);
 
     // Create an adapter for the HASH peripheral
     // In this way it is ensured that only one mode is used by the peripheral
@@ -654,19 +654,29 @@ unsafe fn start() -> (
 
     display_alarm.setup();
 
-    let sr = static_init!(Sr74HC<'static, GpioHw>, Sr74HC::new(latch, clock, data));
-    let display = SevenSegmentShiftRegister::new(
-        sr,
-        SEGMENT_MAP_DIGIT,
-        SEVEN_SEGMENT,
-        display_alarm,
-        Cell::new(0),
-        Cell::new(0),
-        0,
-        50,
+    let sr = static_init!(Sr74HC<GpioHw>, Sr74HC::new(latch, clock, data));
+    let display = static_init!(
+        SevenSegmentShiftRegister<
+            'static,
+            Sr74HC<GpioHw>,
+            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<
+                'static,
+                stm32u545::tim::Tim2<'static>,
+            >,
+        >,
+        SevenSegmentShiftRegister::new(
+            sr,
+            SEGMENT_MAP_DIGIT,
+            SEVEN_SEGMENT,
+            display_alarm,
+            Cell::new(0),
+            Cell::new(0),
+            0,
+            50,
+        )
     );
 
-    display_alarm.set_alarm_client(display_alarm);
+    display_alarm.set_alarm_client(display);
     display.init();
 
     let _ = display.write(1234, 0);

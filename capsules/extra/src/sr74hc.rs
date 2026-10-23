@@ -1,14 +1,14 @@
 use kernel::hil::gpio::Configure;
 use kernel::hil::{gpio::Output, shift_register::ShiftRegister};
 
-pub struct Sr74HC<'a, P: Configure + Output> {
-    latch: &'a P,
-    clock: &'a P,
-    data: &'a P,
+pub struct Sr74HC<P: Configure + Output> {
+    latch: P,
+    clock: P,
+    data: P,
 }
 
-impl<'a, P: Configure + Output> Sr74HC<'a, P> {
-    pub fn new(latch: &'a P, clock: &'a P, data: &'a P) -> Self {
+impl<'a, P: Configure + Output> Sr74HC<P> {
+    pub fn new(latch: P, clock: P, data: P) -> Self {
         latch.make_output();
         clock.make_output();
         data.make_output();
@@ -20,7 +20,7 @@ impl<'a, P: Configure + Output> Sr74HC<'a, P> {
     }
 }
 
-impl<'a, P: Configure + Output> ShiftRegister for Sr74HC<'a, P> {
+impl<'a, P: Configure + Output> ShiftRegister for Sr74HC<P> {
     fn write(&self, value: u8) -> Result<(), kernel::ErrorCode> {
         self.latch.clear();
         for i in 0..8 {
