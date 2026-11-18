@@ -91,6 +91,7 @@ pub mod screen_adapters;
 pub mod screen_on;
 pub mod segger_rtt;
 pub mod servo;
+pub mod seven_segment;
 pub mod sh1106;
 pub mod sha;
 pub mod shift_register;
