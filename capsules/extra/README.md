@@ -152,7 +152,8 @@ These provide common and better abstractions for userspace.
 - **[Touch](src/touch.rs)**: User touch panels.
 - **[Distance](src/distance.rs)**: Distance sensor.
 - **[Shift Register](src/shift_register.rs)**: Userspace interface for shift registers.
-
+- **[Seven Segment](src/sevensegment.rs)**:  Seven-segment display controller using a shift register.
+- **[Seven Segment Syscall](src/sevensegment_syscall.rs)**: Userspace interface for seven-segment displays.
 
 Virtualized Sensor Capsules for Userspace
 -----------------------------------------

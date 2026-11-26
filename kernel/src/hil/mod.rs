@@ -35,6 +35,7 @@ pub mod rng;
 pub mod screen;
 pub mod sensors;
 pub mod servo;
+pub mod sevensegment;
 pub mod shift_register;
 pub mod spi;
 pub mod symmetric_encryption;

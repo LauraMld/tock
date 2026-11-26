@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2026.
 
+//! Seven-segment display capsule using a shift register.
+
 use core::cell::Cell;
 use kernel::ErrorCode;
 use kernel::hil::sevensegment::SevenSegment;
 use kernel::hil::shift_register::ShiftRegister;
 use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
 
+/// Controls a seven-segment display through a shift register.
 pub struct SevenSegmentShiftRegister<'a, Sr: ShiftRegister, A: Alarm<'a>, const DIGITS: usize> {
     shift_register: &'a Sr,
     segment_map_digit: [u8; 10],
@@ -29,7 +32,7 @@ impl<'a, Sr: ShiftRegister, A: Alarm<'a>, const DIGITS: usize>
         alarm: &'a A,
         number: Cell<usize>,
         position: Cell<usize>,
-        timing: usize,
+        _timing: usize,
         refresh_rate: usize,
         activ: Cell<bool>,
     ) -> Self {
@@ -49,8 +52,6 @@ impl<'a, Sr: ShiftRegister, A: Alarm<'a>, const DIGITS: usize>
         self.next_digit(DIGITS);
     }
 
-    /// Displays one digit at a time
-    /// Number of digits must be given as a parameter
     fn next_digit(&self, nr_digits: usize) {
         let number = self.number.get();
         let pos = self.position.get();
@@ -58,18 +59,18 @@ impl<'a, Sr: ShiftRegister, A: Alarm<'a>, const DIGITS: usize>
 
         if self.activ.get() {
             // write digit
-            let _ = self.shift_register.write(
+            self.shift_register.write(
                 self.segment_map_digit[(number / aux.pow((nr_digits - pos - 1) as u32)) % 10]
                     as usize,
             );
             // write position
-            let _ = self.shift_register.write(self.seven_segment[pos] as usize);
+            self.shift_register.write(self.seven_segment[pos] as usize);
 
             // next position
             self.position.set((pos + 1) % nr_digits);
         } else {
-            let _ = self.shift_register.write(0x00);
-            let _ = self.shift_register.write(0x00);
+            self.shift_register.write(0x00);
+            self.shift_register.write(0x00);
         }
         let interval = self.alarm.ticks_from_ms(self.timing as u32);
         self.alarm.set_alarm(self.alarm.now(), interval);
@@ -96,7 +97,7 @@ impl<'a, Sr: ShiftRegister, A: Alarm<'a>, const DIGITS: usize> SevenSegment
     }
 
     fn write(&self, number: usize, _point: u8) -> Result<(), ErrorCode> {
-        self.number.set(number as usize);
+        self.number.set(number);
         self.activ.set(true);
         Ok(())
     }

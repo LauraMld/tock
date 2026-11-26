@@ -9,7 +9,7 @@
 //! SEVEN_SEGMENT : values for position select
 //!
 //! Example for nucleo_u545re_q board:
-//! ```rust
+//! ```rust,ignore
 //! const SEGMENT_MAP_DIGIT: [u8; 10] = [0x03, 0x9F, 0x25, 0x0D, 0x99, 0x49, 0x41, 0x1F, 0x01, 0x09];
 //! const SEVEN_SEGMENT: [u8; 4] = [0x8F, 0x4F, 0x2F, 0x1F];
 //! ```
@@ -33,9 +33,9 @@
 //! ```
 //!
 
-use capsules_core::sevensegment::SevenSegmentDriver;
 use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use capsules_extra::sevensegment::SevenSegmentShiftRegister;
+use capsules_extra::sevensegment_syscall::SevenSegmentDriver;
 use core::cell::Cell;
 use core::mem::MaybeUninit;
 use kernel::component::Component;
@@ -59,7 +59,7 @@ macro_rules! seven_segment_shift_register_component_static {
         );
 
         let sevensegment = kernel::static_buf!(
-            capsules_core::sevensegment::SevenSegmentDriver<
+            capsules_extra::sevensegment_syscall::SevenSegmentDriver<
                 'static,
                 capsules_extra::sevensegment::SevenSegmentShiftRegister<
                     'static,

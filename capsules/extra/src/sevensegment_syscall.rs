@@ -2,13 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2026.
 
+//! Userspace driver for seven-segment displays.
+//!
+//! ### `command_number`
+//!
+//! - `0`: Check if the driver is present.
+//! - `1`: Return the number of digits available.
+//! - `2`: Write a number to the display.
+//! - `3`: Clear the display.
+
 use kernel::hil::sevensegment::SevenSegment;
 
 use kernel::ErrorCode;
 use kernel::process::{Error, ProcessId};
 use kernel::syscall::{CommandReturn, SyscallDriver};
 
-use crate::driver;
+use capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::SevenSegment as usize;
 
 pub struct SevenSegmentDriver<'a, S: SevenSegment> {
@@ -21,15 +30,7 @@ impl<'a, S: SevenSegment> SevenSegmentDriver<'a, S> {
     }
 }
 
-impl<'a, S: SevenSegment> SyscallDriver for SevenSegmentDriver<'a, S> {
-    /// ### `command_number`
-    ///
-    ///  - '1': returns the number of digits available
-    ///  - '2': Write the number. Returns `INVAL` if the number is invalid.
-    /// Returns `FAIL` if seven_segment.write() does not exit with OK.
-    ///  - '3': Clears the display. Returns `FAIL` if seven_segment.clear()
-    /// does not exit with OK.
-    ///
+impl<S: SevenSegment> SyscallDriver for SevenSegmentDriver<'_, S> {
     fn command(
         &self,
         command_number: usize,
