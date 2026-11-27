@@ -7,6 +7,7 @@
 pub mod adc;
 pub mod aes;
 pub mod chip;
+pub mod cordic;
 pub mod crc;
 pub mod dac;
 pub mod dma;

@@ -213,6 +213,7 @@ register_bitfields![u32,
     ],
     pub AHB1ENR [
         GPDMA1EN OFFSET(0) NUMBITS(1) [],
+        CORDICEN OFFSET(1) NUMBITS(1) [],
         CRCEN OFFSET(12) NUMBITS(1) []
     ],
     pub AHB2ENR1 [
@@ -991,6 +992,9 @@ impl Rcc {
     }
     pub fn enable_crc(&self) {
         self.registers.ahb1enr.modify(AHB1ENR::CRCEN::SET);
+    }
+    pub fn enable_cordic(&self) {
+        self.registers.ahb1enr.modify(AHB1ENR::CORDICEN::SET);
     }
     pub fn enable_aes(&self) {
         self.registers.ahb2enr1.modify(AHB2ENR1::AESEN::SET);
